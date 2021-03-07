@@ -1,6 +1,5 @@
 package com.example.androiddevchallenge
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +12,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.androiddevchallenge.ui.ControlState
 import com.example.androiddevchallenge.ui.Controls
 import com.example.androiddevchallenge.ui.CountDownScreen
-import com.example.androiddevchallenge.ui.DurationSelector
 
 @Composable
 fun CountDownApp(viewModel: MainViewModel) {
@@ -44,15 +42,19 @@ fun CountDownApp(viewModel: MainViewModel) {
                 controlState = controlState,
                 onStart = {
                     controlState = ControlState.RUNNING
+                    viewModel.startTimer()
                 },
                 onPause = {
-
+                    controlState = ControlState.PAUSED
+                    viewModel.pauseTimer()
                 },
                 onResume = {
-
+                    controlState = ControlState.RUNNING
+                    viewModel.startTimer()
                 },
                 onCancel = {
                     controlState = ControlState.IDLE
+                    viewModel.cancelTimer()
                 }
             )
         }

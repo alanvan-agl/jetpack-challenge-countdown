@@ -13,7 +13,8 @@ class MainViewModel: ViewModel() {
         private const val MAX_SECOND = 60
         private const val MIN_SECOND = 0
     }
-    val durationInSeconds = MutableStateFlow(0)
+    val elapsedTimeInMillis = MutableStateFlow(0L)
+    val requiredTimeInMillis = MutableStateFlow(0L)
 
     val hour = MutableStateFlow(0)
     val minute = MutableStateFlow(0)
@@ -22,10 +23,6 @@ class MainViewModel: ViewModel() {
     val timerState = MutableStateFlow<TimerState>(TimerState.Idle)
 
     var timer: CountDownTimer? = null
-
-    fun setDurationInSeconds(time: Int) {
-        durationInSeconds.value = time
-    }
 
     fun increaseDuration(duration: Int, type: DurationType) {
         when (type) {
@@ -67,26 +64,27 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun resetDuration() {
-        hour.value = 0
-        minute.value = 0
-        second.value = 0
-    }
-
-    fun cancelTimer() {
+    fun pauseTimer() {
         timer?.cancel()
         timer = null
         timerState.value = TimerState.Idle
     }
 
-    fun startTimer() {
-        timer = object: CountDownTimer(durationInSeconds.value * 1_000L, 1_000L) {
+    fun cancelTimer() {
+        pauseTimer()
+        elapsedTimeInMillis.value = 0
+    }
+
+    fun startTimer(fromScratch: Boolean = true) {
+        requiredTimeInMillis.value = (hour.value * 3_600 + minute.value * 60 + second.value) * 1_000L
+        timer = object: CountDownTimer(requiredTimeInMillis.value - elapsedTimeInMillis.value, 1) {
             override fun onTick(millisUntilFinished: Long) {
-                durationInSeconds.value = (millisUntilFinished / 1_000L).toInt()
+                elapsedTimeInMillis.value = requiredTimeInMillis.value - millisUntilFinished
             }
             override fun onFinish() {
                 timer = null
                 timerState.value = TimerState.Idle
+                elapsedTimeInMillis.value = 0
             }
         }
         timer?.start()
