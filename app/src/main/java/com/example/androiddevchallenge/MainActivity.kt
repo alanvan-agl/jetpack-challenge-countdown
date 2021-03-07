@@ -40,9 +40,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-// Start building your app here!
-@Composable
-fun CountDownApp(viewModel: MainViewModel) {
-    DurationSelector(viewModel = viewModel)
-}
