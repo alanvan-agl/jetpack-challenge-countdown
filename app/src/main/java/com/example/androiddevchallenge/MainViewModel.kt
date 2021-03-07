@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.androiddevchallenge
 
 import android.os.CountDownTimer
@@ -6,9 +21,8 @@ import com.example.androiddevchallenge.ui.AlertState
 import com.example.androiddevchallenge.ui.TimerState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     companion object {
         private const val MAX_HOUR = 24
         private const val MIN_HOUR = 0
@@ -85,7 +99,7 @@ class MainViewModel: ViewModel() {
         val millisInFuture = getMillisInFuture()
         if (millisInFuture > 0) {
             timerState.value = TimerState.Running
-            timer = object: CountDownTimer(millisInFuture, 1) {
+            timer = object : CountDownTimer(millisInFuture, 1) {
                 override fun onTick(millisUntilFinished: Long) {
                     elapsedTimeInMillis.value = requiredTimeInMillis.value - millisUntilFinished
                 }
