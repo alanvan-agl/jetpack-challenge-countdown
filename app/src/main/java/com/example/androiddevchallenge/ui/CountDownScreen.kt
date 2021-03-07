@@ -16,16 +16,18 @@
 package com.example.androiddevchallenge.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.MainViewModel
 
 @Composable
 fun CountDownScreen(viewModel: MainViewModel, timerState: TimerState) {
+    val requiredSize = 350.dp
     when (timerState) {
         is TimerState.Idle -> {
-            DurationSelector(viewModel)
+            DurationSelector(requiredSize, viewModel)
         }
         TimerState.Running, TimerState.Paused -> {
-            CountDown(viewModel)
+            CountDown(requiredSize, viewModel)
         }
     }
 }

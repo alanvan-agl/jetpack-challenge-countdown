@@ -26,21 +26,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.MainViewModel
 import com.example.androiddevchallenge.ui.theme.primaryLightVariant
 import com.example.androiddevchallenge.ui.theme.progressColor
 
 @Composable
-fun CountDown(viewModel: MainViewModel) {
+fun CountDown(requiredSize: Dp, viewModel: MainViewModel) {
     val elapsedTime by viewModel.elapsedTimeInMillis.collectAsState()
     val totalRemainingTimeInSeconds by viewModel.requiredTimeInMillis.collectAsState()
     val progress: Float = elapsedTime.toFloat() / totalRemainingTimeInSeconds
     Box {
         Canvas(
             modifier = Modifier
-                .requiredWidth(320.dp)
-                .requiredHeight(320.dp)
+                .requiredWidth(requiredSize)
+                .requiredHeight(requiredSize)
         ) {
             val (canvasWidth, canvasHeight) = size.width to size.height
             drawCircle(
@@ -52,8 +53,8 @@ fun CountDown(viewModel: MainViewModel) {
         }
         Canvas(
             modifier = Modifier
-                .requiredWidth(320.dp)
-                .requiredHeight(320.dp)
+                .requiredWidth(requiredSize)
+                .requiredHeight(requiredSize)
         ) {
             drawArc(
                 color = progressColor,

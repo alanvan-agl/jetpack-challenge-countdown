@@ -18,7 +18,8 @@ package com.example.androiddevchallenge.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -26,18 +27,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.MainViewModel
 import com.example.androiddevchallenge.R
 
 @Composable
-fun DurationSelector(viewModel: MainViewModel) {
+fun DurationSelector(requiredSize: Dp, viewModel: MainViewModel) {
     val currentHour = viewModel.hour.collectAsState()
     val currentMinute = viewModel.minute.collectAsState()
     val currentSecond = viewModel.second.collectAsState()
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .requiredWidth(requiredSize)
+            .requiredHeight(requiredSize),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         NumberSelector(

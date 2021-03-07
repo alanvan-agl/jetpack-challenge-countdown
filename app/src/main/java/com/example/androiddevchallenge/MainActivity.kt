@@ -15,6 +15,7 @@
  */
 package com.example.androiddevchallenge
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -84,12 +85,13 @@ class MainActivity : AppCompatActivity() {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeRemainingInMillis, pendingIntent)
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun cancelAlarm() {
         val pendingIntent = PendingIntent.getBroadcast(
             this,
             1,
             Intent(this, AlertReceiver::class.java),
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT
         )
         alarmManager.cancel(pendingIntent)
     }
