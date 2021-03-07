@@ -2,7 +2,11 @@ package com.example.androiddevchallenge
 
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
+import com.example.androiddevchallenge.ui.AlertState
+import com.example.androiddevchallenge.ui.TimerState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel: ViewModel() {
     companion object {
@@ -15,13 +19,12 @@ class MainViewModel: ViewModel() {
     }
     val elapsedTimeInMillis = MutableStateFlow(0L)
     val requiredTimeInMillis = MutableStateFlow(0L)
+    val timerState = MutableStateFlow<TimerState>(TimerState.Idle)
+    val alertState = MutableSharedFlow<AlertState>(extraBufferCapacity = Int.MAX_VALUE)
 
     val hour = MutableStateFlow(0)
     val minute = MutableStateFlow(0)
     val second = MutableStateFlow(0)
-
-    val timerState = MutableStateFlow<TimerState>(TimerState.Idle)
-
     var timer: CountDownTimer? = null
 
     fun increaseDuration(duration: Int, type: DurationType) {
@@ -65,38 +68,42 @@ class MainViewModel: ViewModel() {
     }
 
     fun pauseTimer() {
+        timerState.value = TimerState.Paused
         timer?.cancel()
         timer = null
-        timerState.value = TimerState.Idle
     }
 
     fun cancelTimer() {
-        pauseTimer()
+        timerState.value = TimerState.Idle
+        timer?.cancel()
+        timer = null
         elapsedTimeInMillis.value = 0
     }
 
-    fun startTimer(fromScratch: Boolean = true) {
+    fun startTimer() {
         requiredTimeInMillis.value = (hour.value * 3_600 + minute.value * 60 + second.value) * 1_000L
-        timer = object: CountDownTimer(requiredTimeInMillis.value - elapsedTimeInMillis.value, 1) {
-            override fun onTick(millisUntilFinished: Long) {
-                elapsedTimeInMillis.value = requiredTimeInMillis.value - millisUntilFinished
+        val millisInFuture = getMillisInFuture()
+        if (millisInFuture > 0) {
+            timerState.value = TimerState.Running
+            timer = object: CountDownTimer(millisInFuture, 1) {
+                override fun onTick(millisUntilFinished: Long) {
+                    elapsedTimeInMillis.value = requiredTimeInMillis.value - millisUntilFinished
+                }
+                override fun onFinish() {
+                    timer = null
+                    elapsedTimeInMillis.value = 0
+                    timerState.value = TimerState.Idle
+                }
             }
-            override fun onFinish() {
-                timer = null
-                timerState.value = TimerState.Idle
-                elapsedTimeInMillis.value = 0
-            }
+            timer?.start()
+        } else {
+            alertState.tryEmit(AlertState.ZERO_DURATION)
         }
-        timer?.start()
-        timerState.value = TimerState.Counting
     }
+
+    fun getMillisInFuture() = requiredTimeInMillis.value - elapsedTimeInMillis.value
 
     enum class DurationType {
         HOUR, MINUTE, SECOND
-    }
-
-    sealed class TimerState {
-        object Idle: TimerState()
-        object Counting: TimerState()
     }
 }

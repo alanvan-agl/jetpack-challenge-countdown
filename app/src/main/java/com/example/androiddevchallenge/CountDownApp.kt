@@ -1,21 +1,20 @@
 package com.example.androiddevchallenge
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.androiddevchallenge.ui.ControlState
+import com.example.androiddevchallenge.ui.TimerState
 import com.example.androiddevchallenge.ui.Controls
 import com.example.androiddevchallenge.ui.CountDownScreen
 
 @Composable
 fun CountDownApp(viewModel: MainViewModel) {
-    var controlState by remember { mutableStateOf(ControlState.IDLE) }
+    val timerState by viewModel.timerState.collectAsState()
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +29,7 @@ fun CountDownApp(viewModel: MainViewModel) {
         }) {
             CountDownScreen(
                 viewModel = viewModel,
-                controlState = controlState
+                timerState = timerState
             )
         }
         Box(modifier = Modifier.constrainAs(controls) {
@@ -39,23 +38,10 @@ fun CountDownApp(viewModel: MainViewModel) {
             end.linkTo(parent.end)
         }) {
             Controls(
-                controlState = controlState,
-                onStart = {
-                    controlState = ControlState.RUNNING
-                    viewModel.startTimer()
-                },
-                onPause = {
-                    controlState = ControlState.PAUSED
-                    viewModel.pauseTimer()
-                },
-                onResume = {
-                    controlState = ControlState.RUNNING
-                    viewModel.startTimer()
-                },
-                onCancel = {
-                    controlState = ControlState.IDLE
-                    viewModel.cancelTimer()
-                }
+                timerState = timerState,
+                onStart = { viewModel.startTimer() },
+                onPause = { viewModel.pauseTimer() },
+                onCancel = { viewModel.cancelTimer() }
             )
         }
     }

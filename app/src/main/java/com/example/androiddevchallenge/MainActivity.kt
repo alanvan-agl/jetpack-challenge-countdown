@@ -15,28 +15,82 @@
  */
 package com.example.androiddevchallenge
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import com.example.androiddevchallenge.ui.DurationSelector
-import com.example.androiddevchallenge.ui.NumberSelector
+import androidx.compose.foundation.background
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
+import com.example.androiddevchallenge.service.AlertReceiver
+import com.example.androiddevchallenge.ui.AlertState
+import com.example.androiddevchallenge.ui.TimerState
 import com.example.androiddevchallenge.ui.theme.CountDownTheme
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<MainViewModel>()
+    private lateinit var alarmManager: AlarmManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         setContent {
             CountDownTheme {
-                CountDownApp(viewModel)
+                Surface(Modifier.background(MaterialTheme.colors.background)) {
+                    CountDownApp(viewModel)
+                }
             }
         }
+        lifecycleScope.launch {
+            viewModel.alertState.collect {
+                if (it == AlertState.ZERO_DURATION) {
+                    Toast.makeText(applicationContext, R.string.zero_duration, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.timerState.collect {
+                when (it) {
+                    is TimerState.Running -> {
+                        startAlarm(viewModel.getMillisInFuture())
+                    }
+                    is TimerState.Idle -> {
+                        cancelAlarm()
+                    }
+                    TimerState.Paused -> {
+                        cancelAlarm()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startAlarm(timeRemainingInMillis: Long) {
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            1,
+            Intent(this, AlertReceiver::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeRemainingInMillis, pendingIntent)
+    }
+
+    private fun cancelAlarm() {
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            1,
+            Intent(this, AlertReceiver::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
     }
 }

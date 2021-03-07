@@ -15,17 +15,16 @@ import com.example.androiddevchallenge.ui.theme.startAndResumeButtonColor
 
 @Composable
 fun Controls(
-    controlState: ControlState,
+    timerState: TimerState,
     onStart: () -> Unit,
     onPause: () -> Unit,
-    onResume: () -> Unit,
     onCancel: () -> Unit
 ) {
     val buttonWidth = 100.dp
     val buttonHeight = 50.dp
     val buttonCornerRadius = 25.dp
-    when (controlState) {
-        ControlState.IDLE -> {
+    when (timerState) {
+        is TimerState.Idle -> {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -44,7 +43,7 @@ fun Controls(
                 }
             }
         }
-        ControlState.RUNNING -> {
+        is TimerState.Running -> {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -75,14 +74,14 @@ fun Controls(
                 }
             }
         }
-        ControlState.PAUSED -> {
+        is TimerState.Paused -> {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 TextButton(
                     modifier = Modifier.width(buttonWidth).height(buttonHeight),
-                    onClick = onResume,
+                    onClick = onStart,
                     colors = ButtonDefaults.buttonColors(backgroundColor = startAndResumeButtonColor),
                     shape = RoundedCornerShape(buttonCornerRadius)
                 ) {

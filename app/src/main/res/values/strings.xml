@@ -17,4 +17,5 @@
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="cancel">Cancel</string>
+    <string name="zero_duration">Please set a duration to start the timer</string>
 </resources>
