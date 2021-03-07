@@ -15,7 +15,6 @@
  */
 package com.example.androiddevchallenge
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -62,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.timerState.collect {
                 when (it) {
                     is TimerState.Running -> {
-                        startAlarm(viewModel.getMillisInFuture())
+                        startAlarm(viewModel.getMillisRemaining())
                     }
                     is TimerState.Idle -> {
                         cancelAlarm()
@@ -85,13 +84,12 @@ class MainActivity : AppCompatActivity() {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeRemainingInMillis, pendingIntent)
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
     private fun cancelAlarm() {
         val pendingIntent = PendingIntent.getBroadcast(
             this,
             1,
             Intent(this, AlertReceiver::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
     }

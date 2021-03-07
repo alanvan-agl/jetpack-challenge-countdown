@@ -19,6 +19,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.MainViewModel
 import com.example.androiddevchallenge.ui.theme.primaryLightVariant
 import com.example.androiddevchallenge.ui.theme.progressColor
+import com.example.androiddevchallenge.ui.theme.progressColorOrange
 
 @Composable
 fun CountDown(requiredSize: Dp, viewModel: MainViewModel) {
@@ -57,12 +59,21 @@ fun CountDown(requiredSize: Dp, viewModel: MainViewModel) {
                 .requiredHeight(requiredSize)
         ) {
             drawArc(
-                color = progressColor,
+                color = if (progress <= 0.75) progressColor else progressColorOrange,
                 startAngle = -90f,
                 sweepAngle = 360f - progress * 360f,
                 useCenter = false,
                 style = Stroke(width = 5.dp.toPx(), cap = StrokeCap.Square)
             )
         }
+        DurationDisplay(
+            modifier = Modifier
+                .requiredWidth(requiredSize)
+                .requiredHeight(requiredSize),
+            reachingEnd = progress > 0.75,
+            hourValue = viewModel.getHourRemaining(),
+            minuteValue = viewModel.getMinuteRemaining(),
+            secondValue = viewModel.getSecondsRemaining()
+        )
     }
 }

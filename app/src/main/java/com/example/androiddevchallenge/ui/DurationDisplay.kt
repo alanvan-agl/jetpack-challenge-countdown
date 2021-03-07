@@ -15,51 +15,54 @@
  */
 package com.example.androiddevchallenge.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.androiddevchallenge.R
+import com.example.androiddevchallenge.ui.theme.progressColorOrange
 
 @Composable
-fun NumberSelector(
-    currentValue: Int,
-    onDurationIncreased: (Int) -> Unit,
-    onDurationDecreased: (Int) -> Unit,
-    type: String
+fun DurationDisplay(
+    modifier: Modifier,
+    reachingEnd: Boolean,
+    hourValue: Int,
+    minuteValue: Int,
+    secondValue: Int
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(color = MaterialTheme.colors.secondary, text = type)
-        Image(
-            modifier = Modifier
-                .padding(PaddingValues(top = 16.dp))
-                .clickable { onDurationIncreased(currentValue) },
-            painter = painterResource(id = R.drawable.ic_baseline_arrow_upward_48),
-            contentDescription = "Increase time"
-        )
+        val color = if (reachingEnd) progressColorOrange else MaterialTheme.colors.secondary
         Text(
-            modifier = Modifier.padding(PaddingValues(top = 16.dp, bottom = 16.dp)),
-            color = MaterialTheme.colors.secondary,
-            text = String.format("%02d", currentValue),
+            color = color,
+            text = String.format("%02d", hourValue),
             fontSize = 48.sp
         )
-        Image(
-            modifier = Modifier
-                .padding(PaddingValues(bottom = 16.dp))
-                .clickable { onDurationDecreased(currentValue) },
-            painter = painterResource(id = R.drawable.ic_baseline_arrow_downward_48),
-            contentDescription = "Decrease time"
+        Text(
+            color = color,
+            text = ":",
+            fontSize = 48.sp
+        )
+        Text(
+            color = color,
+            text = String.format("%02d", minuteValue),
+            fontSize = 48.sp
+        )
+        Text(
+            color = color,
+            text = ":",
+            fontSize = 48.sp
+        )
+        Text(
+            color = color,
+            text = String.format("%02d", secondValue),
+            fontSize = 48.sp
         )
     }
 }

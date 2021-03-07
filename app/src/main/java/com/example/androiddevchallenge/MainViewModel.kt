@@ -96,7 +96,7 @@ class MainViewModel : ViewModel() {
 
     fun startTimer() {
         requiredTimeInMillis.value = (hour.value * 3_600 + minute.value * 60 + second.value) * 1_000L
-        val millisInFuture = getMillisInFuture()
+        val millisInFuture = getMillisRemaining()
         if (millisInFuture > 0) {
             timerState.value = TimerState.Running
             timer = object : CountDownTimer(millisInFuture, 1) {
@@ -115,7 +115,11 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getMillisInFuture() = requiredTimeInMillis.value - elapsedTimeInMillis.value
+    fun getMillisRemaining() = requiredTimeInMillis.value - elapsedTimeInMillis.value
+
+    fun getHourRemaining() = ((getMillisRemaining() / (1_000 * 60 * 60)) % 60).toInt()
+    fun getMinuteRemaining() = ((getMillisRemaining() / (1_000 * 60)) % 60).toInt()
+    fun getSecondsRemaining() = ((getMillisRemaining() / 1_000) % 60).toInt()
 
     enum class DurationType {
         HOUR, MINUTE, SECOND
